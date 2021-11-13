@@ -111,8 +111,15 @@ clean_s3:
 
 	@echo "$(GREEN)$(BOLD)Done$(RESET)"
 
+container_jaeger:
+	@echo "$(YELLOW)$(BOLD)Starting Jaeger container...$(RESET)"
+	docker compose build jaeger
+	docker compose up -d --no-deps jaeger
+	@echo "$(GREEN)$(BOLD)Done$(RESET)"
+
 
 # Entry points
 install: install_s1 install_s2 install_s3 ## Install all the dependencies across all the microservices
 reset: clean_s1 clean_s2 clean_s3 ## Clean the /dist folder and the node_modules/ folder in all the microservices
 containers: container_build container_up ## Build all container images, and start containers in detached mode
+jaeger: container_jaeger # Start Jaeger container to reach it either using a local instance or throughout containers

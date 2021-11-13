@@ -33,7 +33,7 @@ OPTIONS
           Receives the stack as an argument. E.g: nodejs
   -a, --action
           An specific action to run upon a passed lab
-          E.g: install/reset
+          E.g: install/reset/jaeger
 * NOTES
 ---------------------------------------------------------
 More commands will be added later
@@ -114,7 +114,16 @@ execute_command(){
 							exit "$?"
 							shift
 					;;
-
+					containers)
+							action_containers
+							exit "$?"
+							shift
+					;;
+					jaeger)
+							action_jaeger
+							exit "$?"
+							shift
+					;;
 					*)
 							break
 					;;
@@ -122,20 +131,36 @@ execute_command(){
 	done;
 }
 
+action_jaeger() {
+  pushd "$LAB" >/dev/null
+
+  make jaeger
+
+  popd >/dev/null
+}
+
 action_install(){
- pushd "$LAB" >/dev/null
+  pushd "$LAB" >/dev/null
 
- make install # Run the make file with all the required logic
+  make install # Run the make file with all the required logic
 
- popd >/dev/null
+  popd >/dev/null
+}
+
+action_containers(){
+  pushd "$LAB" >/dev/null
+
+  make containers
+
+  popd >/dev/null
 }
 
 action_reset(){
- pushd "$LAB" >/dev/null
+  pushd "$LAB" >/dev/null
 
- make reset # Run the make file with all the required logic
+  make reset # Run the make file with all the required logic
 
- popd >/dev/null
+  popd >/dev/null
 }
 
 # Set the necessary command arguments
