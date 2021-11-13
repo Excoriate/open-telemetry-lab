@@ -36,6 +36,11 @@ define setup_service
 	@echo "$(YELLOW)$(BOLD)Setting up microservice...$(RESET)"
 	@echo "Acting on folder: `pwd`"
 	@npm install
+
+	@npm install --save @opentelemetry/api
+	@npm install --save @opentelemetry/sdk-node
+	@npm install --save @opentelemetry/auto-instrumentations-node
+
 	@ls -ltrah
 	@echo "$(GREEN)$(BOLD)Installation complete...$(RESET)"
 endef
