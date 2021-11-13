@@ -1,5 +1,12 @@
 .SHELL := /usr/bin/bash
 
+.PHONY: help
+
+help: ## This help.
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+.DEFAULT_GOAL := help
+
 # Global variables
 CURRENT_FOLDER=$(shell basename "$$(pwd)")
 
@@ -42,6 +49,19 @@ define clean_services_node_modules
 	@ls -ltrah
 	@echo "$(GREEN)$(BOLD)All node_modules dependencies were removed.$(RESET)"
 endef
+
+container_build: # Build all the container images using docker-compose build
+	@echo "$(YELLOW)$(BOLD)Creating container images...$(RESET)"
+	docker compose build
+	@echo "$(GREEN)$(BOLD)Container images created successfully$(RESET)"
+
+container_up: # Run all the containers, in detached mode
+	@echo "$(YELLOW)$(BOLD)Starting containers...$(RESET)"
+
+	docker compose up -d
+	docker ps -a
+
+	@echo "$(YELLOW)$(BOLD)Containers setup completed$(RESET)"
 
 install_s1:
 	@echo "$(BOLD)Installing dependencies in all microservices (service 1)...$(RESET)"
@@ -91,6 +111,8 @@ clean_s3:
 
 	@echo "$(GREEN)$(BOLD)Done$(RESET)"
 
+
 # Entry points
-install: install_s1 install_s2 install_s3
-reset: clean_s1 clean_s2 clean_s3
+install: install_s1 install_s2 install_s3 ## Install all the dependencies across all the microservices
+reset: clean_s1 clean_s2 clean_s3 ## Clean the /dist folder and the node_modules/ folder in all the microservices
+containers: container_build container_up ## Build all container images, and start containers in detached mode
