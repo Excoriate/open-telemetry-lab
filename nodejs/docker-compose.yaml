@@ -9,12 +9,13 @@ services:
       context: ./microservice-1/
       dockerfile: Dockerfile
       args:
+        # TODO: Add custom tags for Jaeger exporter
         PORT_ARG: 3001
         NAME_ARG: 'microservice1'
-        DELAY_ARG: 'false'
-        JAEGER_PORT_ARG: 'microservice1'
+        JAEGER_PORT_ARG: 16686
         JAEGER_HOST_ARG: 'http://localhost'
-        JAEGER_ENDPOINT_ARG: 'api/traces'
+        IS_LOCAL: false
+        DELAY_ARG: false
     ports:
       - "3001:10010"
     networks:
@@ -34,10 +35,10 @@ services:
       args:
         PORT_ARG: 3002
         NAME_ARG: 'microservice2'
-        DELAY_ARG: 'false'
-        JAEGER_PORT_ARG: 'microservice2'
+        IS_LOCAL: false
+        DELAY_ARG: false
+        JAEGER_PORT_ARG: 16686
         JAEGER_HOST_ARG: 'http://localhost'
-        JAEGER_ENDPOINT_ARG: 'api/traces'
     ports:
       - "3002:10010"
     networks:
@@ -53,10 +54,10 @@ services:
       args:
         PORT_ARG: 3003
         NAME_ARG: 'microservice3'
-        DELAY_ARG: 'false'
-        JAEGER_PORT_ARG: 'microservice3'
+        IS_LOCAL: false
+        DELAY_ARG: false
+        JAEGER_PORT_ARG: 16686
         JAEGER_HOST_ARG: 'http://localhost'
-        JAEGER_ENDPOINT_ARG: 'api/traces'
     ports:
       - "3003:10010"
     networks:
