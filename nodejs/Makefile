@@ -40,6 +40,9 @@ define setup_service
 	@npm install --save @opentelemetry/api
 	@npm install --save @opentelemetry/sdk-node
 	@npm install --save @opentelemetry/auto-instrumentations-node
+	@npm install --save @opentelemetry/instrumentation-http
+	@npm i @opentelemetry/exporter-jaeger
+
 
 	@ls -ltrah
 	@echo "$(GREEN)$(BOLD)Installation complete...$(RESET)"
