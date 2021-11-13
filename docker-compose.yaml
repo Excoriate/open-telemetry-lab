@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # First microservice, caller (microservice 1 -> microservice 2 -> microservice 3)
+  microservice-1:
+    container_name: microservice-1
+    image: otel-image-service1:1.0.0
+    build:
+      context: ./microservice-1/
+      dockerfile: Dockerfile
+      args:
+        PORT_ARG: 3001
+        NAME_ARG: 'microservice1'
+        DELAY_ARG: 'false'
+        JAEGER_PORT_ARG: 'microservice1'
+        JAEGER_HOST_ARG: 'http://localhost'
+        JAEGER_ENDPOINT_ARG: 'api/traces'
+    ports:
+      - "3001:10010"
+    networks:
+      - jaeger-otel-network
+#    volumes:
+#      - /usr/src/app:/microservice-1/
+#      - .:/usr/src/app
+#      - /usr/src/app/node_modules
+    restart: unless-stopped
+  # Second microservice, caller (microservice 2 -> microservice 3)
+  microservice-2:
+    container_name: microservice-2
+    image: otel-image-service2:1.0.0
+    build:
+      context: ./microservice-2
+      dockerfile: Dockerfile
+      args:
+        PORT_ARG: 3002
+        NAME_ARG: 'microservice2'
+        DELAY_ARG: 'false'
+        JAEGER_PORT_ARG: 'microservice2'
+        JAEGER_HOST_ARG: 'http://localhost'
+        JAEGER_ENDPOINT_ARG: 'api/traces'
+    ports:
+      - "3002:10010"
+    networks:
+      - jaeger-otel-network
+    restart: unless-stopped
+  # Third receiver microservice, (microservice 3)
+  microservice-3:
+    container_name: microservice-3
+    image: otel-image-service3:1.0.0
+    build:
+      context: ./microservice-3
+      dockerfile: Dockerfile
+      args:
+        PORT_ARG: 3003
+        NAME_ARG: 'microservice3'
+        DELAY_ARG: 'false'
+        JAEGER_PORT_ARG: 'microservice3'
+        JAEGER_HOST_ARG: 'http://localhost'
+        JAEGER_ENDPOINT_ARG: 'api/traces'
+    ports:
+      - "3003:10010"
+    networks:
+      - jaeger-otel-network
+    restart: unless-stopped
+
+  jaeger:
+    image: jaegertracing/all-in-one
+    container_name: jaeger
+    ports:
+      - "16686:16686"
+      - "14269:14269"
+    networks:
+      - jaeger-otel-network
+    environment:
+      - LOG_LEVEL=debug
+    restart: on-failure
+
+networks:
+  jaeger-otel-network:
+    name: "jaeger-otel-network"
