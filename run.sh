@@ -10,7 +10,7 @@ main(){
   set_cmd_args "$@"
 
   # Run checks
-  is_lab_valid
+  run_validations
 
   # Execute commands/actions
   execute_command
@@ -23,6 +23,7 @@ NAME
 SYNOPSIS
     $SCRIPT_NAME [-h|--help]
     $SCRIPT_NAME [-l|--lab[=<arg>]]
+    $SCRIPT_NAME [-a|--action[=<arg>]]
                       [--]
 OPTIONS
   -h, --help
@@ -30,6 +31,9 @@ OPTIONS
   -l, --lab
           Setup an specific lab
           Receives the stack as an argument. E.g: nodejs
+  -a, --action
+          An specific action to run upon a passed lab
+          E.g: install/reset
 * NOTES
 ---------------------------------------------------------
 More commands will be added later
@@ -48,12 +52,12 @@ panic() {
 print_error(){
   local error_message
   local error_type
-  error_message="${1}"
-  error_type="${2}"
+  error_message="${2}"
+  error_type="${1}"
 
   echo
   echo "********************************************************"
-  echo "[ERROR] |$error_type > $error_message"
+  echo "[ERROR] | $error_type > $error_message"
   echo "********************************************************"
   echo
 
@@ -71,6 +75,22 @@ print_info(){
   echo
 }
 
+run_validations() {
+  # Validate required arguments
+  if [[ -z "$LAB" ]];
+    then
+      print_error "INVALID_ARGS" "argument lab (--lab) is required."
+    else
+      # check whether the lab passed is valid (as a directory)
+      is_lab_valid
+  fi
+
+  if [[ -z "$ACTION" ]];
+    then
+      print_error "INVALID_ARGS" "argument action (--action) is required."
+  fi
+}
+
 is_lab_valid(){
   if [[ ! -d "$LAB" ]];
     then
@@ -85,12 +105,12 @@ execute_command(){
 	while true ; do
 			case "$ACTION" in
 					install)
-							# TODO: Do the install action
+							action_install
 							exit "$?"
 							shift
 					;;
 					reset)
-							# TODO: Do the reset action
+							action_reset
 							exit "$?"
 							shift
 					;;
@@ -100,6 +120,22 @@ execute_command(){
 					;;
 			esac
 	done;
+}
+
+action_install(){
+ pushd "$LAB" >/dev/null
+
+ make install # Run the make file with all the required logic
+
+ popd >/dev/null
+}
+
+action_reset(){
+ pushd "$LAB" >/dev/null
+
+ make reset # Run the make file with all the required logic
+
+ popd >/dev/null
 }
 
 # Set the necessary command arguments
@@ -116,11 +152,15 @@ set_cmd_args() {
       exit 0
       ;;
     -l=* | --lab=*)
-      $LAB="${i#*=}"
+      local raw_arg
+      raw_arg="${i#*=}"
+      LAB="$raw_arg"
       shift
       ;;
     -a=* | --action=*)
-      $ACTION="${i#*=}"
+      local raw_arg
+      raw_arg="${i#*=}"
+      ACTION="$raw_arg"
       shift
       ;;
     *)

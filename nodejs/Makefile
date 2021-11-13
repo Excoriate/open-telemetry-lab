@@ -92,5 +92,5 @@ clean_s3:
 	@echo "$(GREEN)$(BOLD)Done$(RESET)"
 
 # Entry points
-setup: install_s1 install_s2 install_s3
-clean: clean_s1 clean_s2 clean_s3
+install: install_s1 install_s2 install_s3
+reset: clean_s1 clean_s2 clean_s3
