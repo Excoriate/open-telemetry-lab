@@ -5,6 +5,8 @@ import { Logger } from '@nestjs/common';
 import {ConfigurationManager, ConfigurationType} from "./lib/otel/configurationManager";
 
 // OpenTelemetry configuration
+// TODO: Add .env for local executions
+// TODO" Add command to trigger all microservices in local executions (no docker)
 const config: ConfigurationType = new ConfigurationManager().getConfiguration();
 tracer(config)
 

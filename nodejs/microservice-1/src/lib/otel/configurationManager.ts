@@ -1,5 +1,9 @@
+import {DotenvConfigOutput, DotenvParseOutput} from "dotenv";
+
 type ConfigurationType = { jaeger_port: number; jaeger_exporter_http: string | undefined; delay: string | boolean; port: number; jaeger_endpoint: string | undefined; name: string; jaeger_host: string }
 import { Logger } from '@nestjs/common';
+import * as dotenv from "dotenv";
+
 
 class ConfigurationManager{
 
@@ -20,10 +24,26 @@ class ConfigurationManager{
         return endpoint;
     }
 
+    /***
+     * Get local environment configuration
+     */
+    getLocalEnvConfig(): DotenvParseOutput {
+        const localConfig: DotenvConfigOutput = dotenv.config({ path: `${__dirname}/.env` });
+        return localConfig.parsed;
+    }
+
     /**
      * Get Jaeger exporter configuration
      */
     public getConfiguration(): ConfigurationType {
+
+        const isLocal: boolean = !(process.env.IS_LOCAL === null || process.env.IS_LOCAL === 'false')
+
+        if (isLocal) {
+            const localConfig = this.getLocalEnvConfig()
+            console.log(localConfig)
+        }
+
         const jaeger_port: number = Number.parseInt(process.env.PORT);
         const jaeger_host: string = process.env.JAEGER_HOST;
         const jaeger_endpoint: string = this.getJaegerExporterHTTPEndpoint(jaeger_host, jaeger_port);

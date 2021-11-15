@@ -42,7 +42,8 @@ define setup_service
 	@npm install --save @opentelemetry/auto-instrumentations-node
 	@npm install --save @opentelemetry/instrumentation-http
 	@npm install --save @opentelemetry/plugin-http
-	@npm i @opentelemetry/exporter-jaeger
+	@npm install @opentelemetry/exporter-jaeger
+	@npm i dotenv --force
 
 
 	@ls -ltrah
